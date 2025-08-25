@@ -1,0 +1,68 @@
+[
+  {
+    "Id": 1,
+    "title": "Review quarterly reports",
+    "description": "Analyze Q3 financial data and prepare summary for board meeting",
+    "category": "Work",
+    "priority": "high",
+    "dueDate": "2024-01-20",
+    "completed": false,
+    "createdAt": "2024-01-15",
+    "completedAt": null
+  },
+  {
+    "Id": 2,
+    "title": "Grocery shopping",
+    "description": "Buy ingredients for weekend meal prep",
+    "category": "Shopping",
+    "priority": "medium",
+    "dueDate": "2024-01-18",
+    "completed": false,
+    "createdAt": "2024-01-16",
+    "completedAt": null
+  },
+  {
+    "Id": 3,
+    "title": "Morning workout",
+    "description": "30-minute HIIT session",
+    "category": "Health",
+    "priority": "medium",
+    "dueDate": null,
+    "completed": true,
+    "createdAt": "2024-01-17",
+    "completedAt": "2024-01-17"
+  },
+  {
+    "Id": 4,
+    "title": "Call mom",
+    "description": "Weekly check-in call",
+    "category": "Personal",
+    "priority": "high",
+    "dueDate": "2024-01-19",
+    "completed": false,
+    "createdAt": "2024-01-15",
+    "completedAt": null
+  },
+  {
+    "Id": 5,
+    "title": "Clean living room",
+    "description": "Vacuum and dust furniture",
+    "category": "Home",
+    "priority": "low",
+    "dueDate": null,
+    "completed": false,
+    "createdAt": "2024-01-16",
+    "completedAt": null
+  },
+  {
+    "Id": 6,
+    "title": "Read React documentation",
+    "description": "Study new hooks and features in React 18",
+    "category": "Learning",
+    "priority": "medium",
+    "dueDate": "2024-01-22",
+    "completed": false,
+    "createdAt": "2024-01-14",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'react-toastify/dist/ReactToastify.css';
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  input, textarea, select {
+    font-family: inherit;
+  }
+}
+
+@layer components {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Toast customization */
+.Toastify__toast-container {
+  width: 380px;
+}
+
+.Toastify__toast {
+  background: white;
+  color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding: 16px;
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid #10b981;
+}
+
+.Toastify__toast--error {
+  border-left: 4px solid #ef4444;
+}
+
+.Toastify__toast--warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.Toastify__close-button {
+  color: #6b7280;
+}
+
+.Toastify__close-button:hover {
+  color: #374151;
+}
