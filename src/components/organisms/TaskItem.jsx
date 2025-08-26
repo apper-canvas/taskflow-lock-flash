@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { format, isPast, isToday, isTomorrow, parseISO } from "date-fns";
 import { motion } from "framer-motion";
-import TimerComponent from "@/components/molecules/TimerComponent";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
+import TimerComponent from "@/components/molecules/TimerComponent";
 import PriorityBadge from "@/components/molecules/PriorityBadge";
 import CategoryBadge from "@/components/molecules/CategoryBadge";
 import Checkbox from "@/components/atoms/Checkbox";
@@ -144,14 +144,14 @@ const dueDateInfo = formatDueDate(task.dueDate);
               </button>
             )}
             
-            <button
+<button
               onClick={() => onDelete(task.Id)}
               className="p-2 text-gray-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors duration-200"
             >
               <ApperIcon name="Trash2" size={16} />
             </button>
           </div>
-</div>
+        </div>
       </div>
     </motion.div>
   );
