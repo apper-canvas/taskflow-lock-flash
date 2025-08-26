@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
+import React, { useState } from "react";
+import { format, isPast, isToday, isTomorrow, parseISO } from "date-fns";
 import { motion } from "framer-motion";
+import TimerComponent from "@/components/molecules/TimerComponent";
 import { cn } from "@/utils/cn";
-import Checkbox from "@/components/atoms/Checkbox";
+import ApperIcon from "@/components/ApperIcon";
 import PriorityBadge from "@/components/molecules/PriorityBadge";
 import CategoryBadge from "@/components/molecules/CategoryBadge";
-import ApperIcon from "@/components/ApperIcon";
+import Checkbox from "@/components/atoms/Checkbox";
 
-const TaskItem = ({ task, categories, onToggleComplete, onDelete }) => {
+const TaskItem = ({ task, categories, onToggleComplete, onDelete, onTimerUpdate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const category = categories.find(cat => cat.name === task.category);
@@ -26,10 +27,23 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete }) => {
     } else {
       return { text: format(taskDate, "MMM d, yyyy"), urgent: false };
     }
+};
+
+  const formatTimeSpent = (seconds) => {
+    if (!seconds || seconds === 0) return "No time tracked";
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m tracked`;
+    } else if (minutes > 0) {
+      return `${minutes}m tracked`;
+    } else {
+      return `${seconds}s tracked`;
+    }
   };
-
-  const dueDateInfo = formatDueDate(task.dueDate);
-
+const dueDateInfo = formatDueDate(task.dueDate);
   return (
     <motion.div
       className={cn(
@@ -39,7 +53,7 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete }) => {
       )}
       whileHover={{ scale: 1.01 }}
     >
-      <div className="p-6">
+<div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-4 flex-1 min-w-0">
             <div className="mt-1">
@@ -102,7 +116,22 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete }) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 ml-4">
+<div className="flex items-center space-x-3 ml-4">
+            {/* Timer Component */}
+            <div className="flex flex-col items-end space-y-1">
+              <TimerComponent
+                taskId={task.Id}
+                initialTimeSpent={task.timeSpent || 0}
+                isRunning={task.timerState?.isRunning || false}
+                onTimeUpdate={onTimerUpdate}
+                size="sm"
+              />
+              <div className="text-xs text-gray-500">
+                {formatTimeSpent(task.timeSpent || 0)}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
             {task.description && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -122,7 +151,7 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete }) => {
               <ApperIcon name="Trash2" size={16} />
             </button>
           </div>
-        </div>
+</div>
       </div>
     </motion.div>
   );

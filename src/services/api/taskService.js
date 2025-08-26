@@ -4,7 +4,9 @@ let tasks = [...mockTasks.map(task => ({
   ...task,
   dueDate: task.dueDate ? new Date(task.dueDate) : null,
   createdAt: new Date(task.createdAt),
-  completedAt: task.completedAt ? new Date(task.completedAt) : null
+  completedAt: task.completedAt ? new Date(task.completedAt) : null,
+  timeSpent: task.timeSpent || 0,
+  timerState: task.timerState || { isRunning: false, lastUpdated: null }
 }))];
 
 const delay = () => new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 200));
@@ -27,7 +29,9 @@ export const taskService = {
       Id: Math.max(...tasks.map(t => t.Id), 0) + 1,
       completed: false,
       createdAt: new Date(),
-      completedAt: null
+completedAt: null,
+      timeSpent: 0,
+      timerState: { isRunning: false, lastUpdated: null }
     };
     tasks.push(newTask);
     return {...newTask};
@@ -37,7 +41,7 @@ export const taskService = {
     await delay();
     const index = tasks.findIndex(task => task.Id === parseInt(id));
     if (index !== -1) {
-      tasks[index] = { ...tasks[index], ...taskData };
+tasks[index] = { ...tasks[index], ...taskData };
       return {...tasks[index]};
     }
     return null;

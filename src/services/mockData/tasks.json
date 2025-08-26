@@ -8,7 +8,9 @@
     "dueDate": "2024-01-20",
     "completed": false,
     "createdAt": "2024-01-15",
-    "completedAt": null
+    "completedAt": null,
+"timeSpent": 3600,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   },
   {
     "Id": 2,
@@ -19,7 +21,9 @@
     "dueDate": "2024-01-18",
     "completed": false,
     "createdAt": "2024-01-16",
-    "completedAt": null
+    "completedAt": null,
+"timeSpent": 1200,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   },
   {
     "Id": 3,
@@ -30,7 +34,9 @@
     "dueDate": null,
     "completed": true,
     "createdAt": "2024-01-17",
-    "completedAt": "2024-01-17"
+    "completedAt": "2024-01-17",
+"timeSpent": 1800,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   },
   {
     "Id": 4,
@@ -41,7 +47,9 @@
     "dueDate": "2024-01-19",
     "completed": false,
     "createdAt": "2024-01-15",
-    "completedAt": null
+    "completedAt": null,
+"timeSpent": 900,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   },
   {
     "Id": 5,
@@ -52,7 +60,9 @@
     "dueDate": null,
     "completed": false,
     "createdAt": "2024-01-16",
-    "completedAt": null
+    "completedAt": null,
+"timeSpent": 0,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   },
   {
     "Id": 6,
@@ -63,6 +73,8 @@
     "dueDate": "2024-01-22",
     "completed": false,
     "createdAt": "2024-01-14",
-    "completedAt": null
+    "completedAt": null,
+"timeSpent": 2700,
+    "timerState": { "isRunning": false, "lastUpdated": null }
   }
 ]

@@ -17,8 +17,10 @@ const Header = ({
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
-    active: 0,
-    completionRate: 0
+active: 0,
+    completionRate: 0,
+    totalTimeSpent: 0,
+    averageTimePerTask: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,9 @@ const Header = ({
       const completed = tasks.filter(task => task.completed).length;
       const active = tasks.filter(task => !task.completed).length;
       const total = tasks.length;
-      const completionRate = total > 0 ? (completed / total) * 100 : 0;
+const completionRate = total > 0 ? (completed / total) * 100 : 0;
+      const totalTimeSpent = tasks.reduce((acc, task) => acc + (task.timeSpent || 0), 0);
+      const averageTimePerTask = total > 0 ? totalTimeSpent / total : 0;
 
       setStats({
         total,
@@ -117,8 +121,25 @@ const Header = ({
                   <div className="flex items-center space-x-2">
                     <ApperIcon name="Clock" size={20} className="text-warning-600" />
                     <div>
-                      <p className="text-2xl font-bold text-warning-700">{stats.active}</p>
+<p className="text-2xl font-bold text-warning-700">{stats.active}</p>
                       <p className="text-xs font-medium text-warning-600">Active</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="bg-gradient-to-br from-primary-50 to-primary-100 p-4 rounded-xl border border-primary-200"
+                >
+                  <div className="flex items-center space-x-2">
+                    <ApperIcon name="Timer" size={20} className="text-primary-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-primary-700">
+                        {Math.floor(stats.totalTimeSpent / 3600)}h
+                      </p>
+                      <p className="text-xs font-medium text-primary-600">Tracked</p>
                     </div>
                   </div>
                 </motion.div>

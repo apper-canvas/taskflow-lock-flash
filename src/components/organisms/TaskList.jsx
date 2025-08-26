@@ -13,7 +13,7 @@ import Loading from "@/components/ui/Loading";
 const TaskList = ({ 
   filter = "all", 
   categoryFilter = null, 
-  onTaskUpdate, 
+onTaskUpdate, 
   searchQuery = "",
   onCreateTask 
 }) => {
@@ -90,7 +90,24 @@ const TaskList = ({
       console.error("Error deleting task:", err);
     }
   };
+const handleTimerUpdate = async (taskId, timeSpent, isRunning) => {
+    try {
+      const updatedTask = await taskService.update(taskId, {
+        timeSpent,
+        timerState: { isRunning, lastUpdated: new Date() }
+      });
+      
+      setTasks(prev => prev.map(task => 
+        task.Id === taskId ? updatedTask : task
+      ));
 
+      if (onTaskUpdate) {
+        onTaskUpdate();
+      }
+    } catch (err) {
+      console.error("Error updating timer:", err);
+    }
+  };
   const getFilteredTasks = () => {
     let filtered = tasks;
 
@@ -274,9 +291,10 @@ const TaskList = ({
             >
               <TaskItem
                 task={task}
-                categories={categories}
+categories={categories}
                 onToggleComplete={handleToggleComplete}
                 onDelete={handleDeleteTask}
+                onTimerUpdate={handleTimerUpdate}
               />
             </motion.div>
           ))}
