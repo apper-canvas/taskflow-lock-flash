@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { format } from "date-fns";
 import { taskService } from "@/services/api/taskService";
 import { categoryService } from "@/services/api/categoryService";
+import ApperIcon from "@/components/ApperIcon";
 import TaskItem from "@/components/organisms/TaskItem";
-import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import ApperIcon from "@/components/ApperIcon";
+import Loading from "@/components/ui/Loading";
 
 const TaskList = ({ 
   filter = "all", 
@@ -105,14 +106,35 @@ const TaskList = ({
       filtered = filtered.filter(task => task.category === categoryFilter);
     }
 
-    // Apply search filter
+// Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(task =>
-        task.title.toLowerCase().includes(query) ||
-        task.description.toLowerCase().includes(query) ||
-        task.category.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter(task => {
+        // Search in title, description, and category
+        const textMatches = 
+          task.title.toLowerCase().includes(query) ||
+          task.description.toLowerCase().includes(query) ||
+          task.category.toLowerCase().includes(query);
+        
+        // Search in due date if it exists
+        let dateMatches = false;
+        if (task.dueDate) {
+          const dueDate = new Date(task.dueDate);
+          // Format date in multiple ways for flexible searching
+          const formattedDate = format(dueDate, 'yyyy-MM-dd').toLowerCase();
+          const monthYear = format(dueDate, 'MMMM yyyy').toLowerCase();
+          const monthDay = format(dueDate, 'MMM d').toLowerCase();
+          const fullDate = format(dueDate, 'EEEE, MMMM d, yyyy').toLowerCase();
+          
+          dateMatches = 
+            formattedDate.includes(query) ||
+            monthYear.includes(query) ||
+            monthDay.includes(query) ||
+            fullDate.includes(query);
+        }
+        
+        return textMatches || dateMatches;
+      });
     }
 
     // Sort by priority and due date
