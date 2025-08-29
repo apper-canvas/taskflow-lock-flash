@@ -10,11 +10,12 @@ export const categoryService = {
       });
 
       const params = {
-        fields: [
+fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "Name"}},
           {"field": {"Name": "color_c"}},
-          {"field": {"Name": "icon_c"}}
+          {"field": {"Name": "icon_c"}},
+          {"field": {"Name": "sub_category_c"}}
         ],
         orderBy: [{"fieldName": "Name", "sorttype": "ASC"}]
       };
@@ -27,11 +28,12 @@ export const categoryService = {
       }
 
       // Transform data to match UI expectations
-      const categories = (response.data || []).map(category => ({
+const categories = (response.data || []).map(category => ({
         Id: category.Id,
         name: category.Name,
         color: category.color_c,
-        icon: category.icon_c
+        icon: category.icon_c,
+        subCategory: category.sub_category_c
       }));
 
       return categories;
@@ -50,11 +52,12 @@ export const categoryService = {
       });
 
       const params = {
-        fields: [
+fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "Name"}},
           {"field": {"Name": "color_c"}},
-          {"field": {"Name": "icon_c"}}
+          {"field": {"Name": "icon_c"}},
+          {"field": {"Name": "sub_category_c"}}
         ]
       };
 
@@ -70,11 +73,12 @@ export const categoryService = {
       }
 
       // Transform data to match UI expectations
-      return {
+return {
         Id: response.data.Id,
         name: response.data.Name,
         color: response.data.color_c,
-        icon: response.data.icon_c
+        icon: response.data.icon_c,
+        subCategory: response.data.sub_category_c
       };
     } catch (error) {
       console.error("Error in categoryService.getById:", error);
@@ -92,9 +96,10 @@ export const categoryService = {
 
       const params = {
         records: [{
-          Name: categoryData.name,
+Name: categoryData.name,
           color_c: categoryData.color,
-          icon_c: categoryData.icon
+          icon_c: categoryData.icon,
+          sub_category_c: categoryData.subCategory
         }]
       };
 
@@ -109,10 +114,11 @@ export const categoryService = {
         const result = response.results[0];
         if (result.success) {
           return {
-            Id: result.data.Id,
+Id: result.data.Id,
             name: result.data.Name,
             color: result.data.color_c,
-            icon: result.data.icon_c
+            icon: result.data.icon_c,
+            subCategory: result.data.sub_category_c
           };
         } else {
           throw new Error(result.message || "Failed to create category");
@@ -138,9 +144,10 @@ export const categoryService = {
         Id: parseInt(id)
       };
 
-      if (categoryData.name !== undefined) updateData.Name = categoryData.name;
+if (categoryData.name !== undefined) updateData.Name = categoryData.name;
       if (categoryData.color !== undefined) updateData.color_c = categoryData.color;
       if (categoryData.icon !== undefined) updateData.icon_c = categoryData.icon;
+      if (categoryData.subCategory !== undefined) updateData.sub_category_c = categoryData.subCategory;
 
       const params = {
         records: [updateData]
@@ -157,10 +164,11 @@ export const categoryService = {
         const result = response.results[0];
         if (result.success) {
           return {
-            Id: result.data.Id,
+Id: result.data.Id,
             name: result.data.Name,
             color: result.data.color_c,
-            icon: result.data.icon_c
+            icon: result.data.icon_c,
+            subCategory: result.data.sub_category_c
           };
         } else {
           throw new Error(result.message || "Failed to update category");

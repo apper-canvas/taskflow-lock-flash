@@ -20,8 +20,18 @@ const CategoryBadge = ({ category, size = "sm", showCount, count, active, onClic
       )}
       style={active ? { backgroundColor: category.color } : {}}
     >
-      <ApperIcon name={category.icon} size={size === "sm" ? 14 : size === "md" ? 16 : 18} />
-      <span>{category.name}</span>
+<ApperIcon name={category.icon} size={size === "sm" ? 14 : size === "md" ? 16 : 18} />
+      <div className="flex flex-col">
+        <span>{category.name}</span>
+        {category.subCategory && (
+          <span className={cn(
+            "text-xs opacity-75",
+            active ? "text-white" : "text-gray-500"
+          )}>
+            {category.subCategory}
+          </span>
+        )}
+      </div>
       {showCount && (
         <span className={cn(
           "px-2 py-0.5 rounded-full text-xs font-bold",

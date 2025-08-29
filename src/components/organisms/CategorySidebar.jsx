@@ -123,7 +123,7 @@ const CategorySidebar = ({ activeCategory, onCategoryChange, className }) => {
 
                 {/* Category List */}
                 <div className="space-y-2">
-                  {categories.map((category) => {
+{categories.map((category) => {
                     const taskCount = getCategoryTaskCount(category.name);
                     const isActive = activeCategory === category.name;
                     
@@ -149,7 +149,16 @@ const CategorySidebar = ({ activeCategory, onCategoryChange, className }) => {
                               size={18} 
                               className={isActive ? "text-white" : "text-gray-600"} 
                             />
-                            <span className="font-medium">{category.name}</span>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{category.name}</span>
+                              {category.subCategory && (
+                                <span className={`text-xs ${
+                                  isActive ? "text-white/70" : "text-gray-500"
+                                }`}>
+                                  {category.subCategory}
+                                </span>
+                              )}
+                            </div>
                           </div>
                           {taskCount > 0 && (
                             <span className={`px-2 py-1 rounded-full text-xs font-bold ${
