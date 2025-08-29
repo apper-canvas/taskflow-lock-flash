@@ -38,7 +38,9 @@ const completionRate = total > 0 ? (completed / total) * 100 : 0;
         total,
         completed,
         active,
-        completionRate
+        completionRate,
+        totalTimeSpent,
+        averageTimePerTask
       });
     } catch (err) {
       console.error("Error loading stats:", err);
