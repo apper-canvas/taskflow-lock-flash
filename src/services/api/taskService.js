@@ -1,9 +1,4 @@
-// Delay function for consistent API simulation
-const delay = (ms = 200) => new Promise(resolve => setTimeout(resolve, ms));
-
 const tableName = 'task_c';
-
-const delay = () => new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 200));
 
 export const taskService = {
   async getAll() {
