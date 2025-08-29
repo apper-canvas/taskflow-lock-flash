@@ -44,6 +44,7 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete, onTimerUpdate 
     }
   };
 const dueDateInfo = formatDueDate(task.dueDate);
+  
   return (
     <motion.div
       className={cn(
@@ -53,7 +54,7 @@ const dueDateInfo = formatDueDate(task.dueDate);
       )}
       whileHover={{ scale: 1.01 }}
     >
-<div className="p-6">
+      <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-4 flex-1 min-w-0">
             <div className="mt-1">
@@ -116,7 +117,7 @@ const dueDateInfo = formatDueDate(task.dueDate);
             </div>
           </div>
 
-<div className="flex items-center space-x-3 ml-4">
+          <div className="flex items-center space-x-3 ml-4">
             {/* Timer Component */}
             <div className="flex flex-col items-end space-y-1">
               <TimerComponent
@@ -132,24 +133,25 @@ const dueDateInfo = formatDueDate(task.dueDate);
             </div>
 
             <div className="flex items-center space-x-2">
-            {task.description && (
+              {task.description && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  <ApperIcon 
+                    name={isExpanded ? "ChevronUp" : "ChevronDown"} 
+                    size={16} 
+                  />
+                </button>
+              )}
+              
               <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                onClick={() => onDelete(task.Id)}
+                className="p-2 text-gray-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors duration-200"
               >
-                <ApperIcon 
-                  name={isExpanded ? "ChevronUp" : "ChevronDown"} 
-                  size={16} 
-                />
+                <ApperIcon name="Trash2" size={16} />
               </button>
-            )}
-            
-<button
-              onClick={() => onDelete(task.Id)}
-              className="p-2 text-gray-400 hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors duration-200"
-            >
-              <ApperIcon name="Trash2" size={16} />
-            </button>
+            </div>
           </div>
         </div>
       </div>
