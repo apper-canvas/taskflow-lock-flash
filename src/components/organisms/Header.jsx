@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { taskService } from "@/services/api/taskService";
+import SearchBar from "@/components/molecules/SearchBar";
+import ApperIcon from "@/components/ApperIcon";
 import ProgressRing from "@/components/molecules/ProgressRing";
 import TaskFilters from "@/components/molecules/TaskFilters";
-import ApperIcon from "@/components/ApperIcon";
+
 
 const Header = ({ 
   activeFilter, 
@@ -153,20 +155,12 @@ const completionRate = total > 0 ? (completed / total) * 100 : 0;
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             {/* Search and Create Button */}
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-              <div className="relative">
-                <ApperIcon 
-                  name="Search" 
-                  size={20} 
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
-                />
-                <input
-                  type="text"
-                  placeholder="Search tasks..."
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  className="pl-10 pr-4 py-3 w-full sm:w-80 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-400"
-                />
-              </div>
+<SearchBar
+                value={searchQuery}
+                onChange={onSearchChange}
+                placeholder="Search tasks..."
+                className="w-full sm:w-80"
+              />
 
               <button
                 onClick={onCreateTask}
