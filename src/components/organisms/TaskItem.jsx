@@ -22,12 +22,12 @@ const TaskItem = ({ task, categories, onToggleComplete, onDelete, onTimerUpdate 
       return { text: "Today", urgent: true };
     } else if (isTomorrow(taskDate)) {
       return { text: "Tomorrow", urgent: false };
-    } else if (isPast(taskDate)) {
+} else if (isPast(taskDate)) {
       return { text: `Overdue (${format(taskDate, "MMM d")})`, urgent: true, overdue: true };
     } else {
       return { text: format(taskDate, "MMM d, yyyy"), urgent: false };
     }
-};
+  };
 
   const formatTimeSpent = (seconds) => {
     if (!seconds || seconds === 0) return "No time tracked";
