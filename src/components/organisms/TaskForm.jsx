@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { taskService } from "@/services/api/taskService";
 import { categoryService } from "@/services/api/categoryService";
+import { recurringTaskPatternService } from "@/services/api/recurringTaskPatternService";
+import { recurrenceRuleService } from "@/services/api/recurrenceRuleService";
+import ApperIcon from "@/components/ApperIcon";
 import FormField from "@/components/molecules/FormField";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
+import Checkbox from "@/components/atoms/Checkbox";
 import Select from "@/components/atoms/Select";
 import Button from "@/components/atoms/Button";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import ApperIcon from "@/components/ApperIcon";
 
 const TaskForm = ({ onSuccess, onCancel }) => {
   const [categories, setCategories] = useState([]);
@@ -24,7 +27,18 @@ const [formData, setFormData] = useState({
     category: "",
     subCategory: "",
     priority: "medium",
-    dueDate: ""
+    dueDate: "",
+    isRecurring: false,
+    recurrence: {
+      frequency: "Daily",
+      interval: 1,
+      dayOfWeek: "",
+      dayOfMonth: "",
+      weekOfMonth: "",
+      endOfMonth: false,
+      startDate: "",
+      endDate: ""
+    }
   });
 
   const [errors, setErrors] = useState({});
@@ -51,7 +65,7 @@ const [formData, setFormData] = useState({
   }, []);
 
   const validateForm = () => {
-    const newErrors = {};
+const newErrors = {};
 
     if (!formData.title.trim()) {
       newErrors.title = "Task title is required";
@@ -77,6 +91,50 @@ const [formData, setFormData] = useState({
       }
     }
 
+    // Recurring task validation
+    if (formData.isRecurring) {
+      if (!formData.recurrence.startDate) {
+        newErrors.recurrenceStartDate = "Start date is required for recurring tasks";
+      }
+
+      if (formData.recurrence.startDate) {
+        const startDate = new Date(formData.recurrence.startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (startDate < today) {
+          newErrors.recurrenceStartDate = "Start date cannot be in the past";
+        }
+      }
+
+      if (formData.recurrence.endDate && formData.recurrence.startDate) {
+        const startDate = new Date(formData.recurrence.startDate);
+        const endDate = new Date(formData.recurrence.endDate);
+        
+        if (endDate <= startDate) {
+          newErrors.recurrenceEndDate = "End date must be after start date";
+        }
+      }
+
+      if (formData.recurrence.interval < 1 || formData.recurrence.interval > 365) {
+        newErrors.recurrenceInterval = "Interval must be between 1 and 365";
+      }
+
+      if (formData.recurrence.frequency === "Weekly" && !formData.recurrence.dayOfWeek) {
+        newErrors.recurrenceDayOfWeek = "Day of week is required for weekly recurrence";
+      }
+
+      if (formData.recurrence.frequency === "Monthly") {
+        if (!formData.recurrence.endOfMonth && !formData.recurrence.dayOfMonth && !formData.recurrence.weekOfMonth) {
+          newErrors.recurrenceMonthly = "Please specify day of month, week of month, or end of month";
+        }
+        
+        if (formData.recurrence.dayOfMonth && (formData.recurrence.dayOfMonth < 1 || formData.recurrence.dayOfMonth > 31)) {
+          newErrors.recurrenceDayOfMonth = "Day of month must be between 1 and 31";
+        }
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -90,10 +148,46 @@ const [formData, setFormData] = useState({
 
     setSubmitting(true);
     try {
-      const taskData = {
+const taskData = {
         ...formData,
         dueDate: formData.dueDate ? new Date(formData.dueDate) : null
       };
+
+      let createdTask;
+      
+      if (formData.isRecurring) {
+        // Create recurring task pattern first
+        const patternData = {
+          name: `${formData.recurrence.frequency} - ${formData.title}`,
+          frequency: formData.recurrence.frequency,
+          interval: parseInt(formData.recurrence.interval),
+          dayOfWeek: formData.recurrence.dayOfWeek || null,
+          dayOfMonth: formData.recurrence.dayOfMonth ? parseInt(formData.recurrence.dayOfMonth) : null,
+          weekOfMonth: formData.recurrence.weekOfMonth || null,
+          endOfMonth: formData.recurrence.endOfMonth || false
+        };
+
+        const pattern = await recurringTaskPatternService.create(patternData);
+        
+        // Create the task
+        createdTask = await taskService.create(taskData);
+        
+        // Create recurrence rule linking task and pattern
+        const ruleData = {
+          name: `Rule for ${formData.title}`,
+          taskId: createdTask.Id,
+          patternId: pattern.Id,
+          startDate: new Date(formData.recurrence.startDate),
+          endDate: formData.recurrence.endDate ? new Date(formData.recurrence.endDate) : null
+        };
+
+        await recurrenceRuleService.create(ruleData);
+        
+        toast.success("Recurring task created successfully!");
+      } else {
+        createdTask = await taskService.create(taskData);
+        toast.success("Task created successfully!");
+      }
 
       await taskService.create(taskData);
       
@@ -113,13 +207,46 @@ const [formData, setFormData] = useState({
     }
   };
 
-  const handleInputChange = (field) => (e) => {
+const handleInputChange = (field) => (e) => {
     const value = e.target.value;
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleRecurrenceChange = (field) => (e) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData(prev => ({ 
+      ...prev, 
+      recurrence: { ...prev.recurrence, [field]: value }
+    }));
+    
+    // Clear recurrence errors when user changes values
+    const errorKey = `recurrence${field.charAt(0).toUpperCase() + field.slice(1)}`;
+    if (errors[errorKey]) {
+      setErrors(prev => ({ ...prev, [errorKey]: "" }));
+    }
+  };
+
+  const handleRecurringToggle = (e) => {
+    const isRecurring = e.target.checked;
+    setFormData(prev => ({ ...prev, isRecurring }));
+    
+    // Clear recurring-related errors when toggling off
+    if (!isRecurring) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.recurrenceStartDate;
+        delete newErrors.recurrenceEndDate;
+        delete newErrors.recurrenceInterval;
+        delete newErrors.recurrenceDayOfWeek;
+        delete newErrors.recurrenceMonthly;
+        delete newErrors.recurrenceDayOfMonth;
+        return newErrors;
+      });
     }
   };
 
@@ -228,7 +355,7 @@ const [formData, setFormData] = useState({
             <option value="low">Low Priority</option>
           </Select>
         </FormField>
-      </div>
+</div>
 
       <FormField 
         label="Due Date (Optional)" 
@@ -242,6 +369,185 @@ const [formData, setFormData] = useState({
           error={errors.dueDate}
         />
       </FormField>
+
+      {/* Recurring Task Section */}
+      <div className="border-t pt-6">
+        <FormField>
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              checked={formData.isRecurring}
+              onChange={handleRecurringToggle}
+            />
+            <label className="text-sm font-semibold text-gray-700 flex items-center space-x-2">
+              <ApperIcon name="Repeat" size={16} />
+              <span>Make this a recurring task</span>
+            </label>
+          </div>
+        </FormField>
+
+        {formData.isRecurring && (
+          <div className="mt-6 space-y-4 bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-sm font-semibold text-gray-700 flex items-center space-x-2">
+              <ApperIcon name="Settings" size={16} />
+              <span>Recurrence Pattern</span>
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField 
+                label="Frequency" 
+                required
+                error={errors.recurrenceFrequency}
+              >
+                <Select
+                  value={formData.recurrence.frequency}
+                  onChange={handleRecurrenceChange("frequency")}
+                  error={errors.recurrenceFrequency}
+                >
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </Select>
+              </FormField>
+
+              <FormField 
+                label="Every" 
+                required
+                error={errors.recurrenceInterval}
+              >
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    max="365"
+                    value={formData.recurrence.interval}
+                    onChange={handleRecurrenceChange("interval")}
+                    error={errors.recurrenceInterval}
+                    className="w-20"
+                  />
+                  <span className="text-sm text-gray-600">
+                    {formData.recurrence.frequency.toLowerCase()}(s)
+                  </span>
+                </div>
+              </FormField>
+            </div>
+
+            {/* Weekly Options */}
+            {formData.recurrence.frequency === "Weekly" && (
+              <FormField 
+                label="Day of Week" 
+                required
+                error={errors.recurrenceDayOfWeek}
+              >
+                <Select
+                  value={formData.recurrence.dayOfWeek}
+                  onChange={handleRecurrenceChange("dayOfWeek")}
+                  error={errors.recurrenceDayOfWeek}
+                >
+                  <option value="">Select day</option>
+                  <option value="Sunday">Sunday</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                </Select>
+              </FormField>
+            )}
+
+            {/* Monthly Options */}
+            {formData.recurrence.frequency === "Monthly" && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">Choose one of the following options:</p>
+                
+                <FormField 
+                  label="Day of Month (1-31)" 
+                  error={errors.recurrenceDayOfMonth}
+                >
+                  <Input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={formData.recurrence.dayOfMonth}
+                    onChange={handleRecurrenceChange("dayOfMonth")}
+                    error={errors.recurrenceDayOfMonth}
+                    placeholder="e.g., 15"
+                  />
+                </FormField>
+
+                <div className="text-sm text-gray-500 text-center">OR</div>
+
+                <FormField 
+                  label="Week of Month" 
+                  error={errors.recurrenceWeekOfMonth}
+                >
+                  <Select
+                    value={formData.recurrence.weekOfMonth}
+                    onChange={handleRecurrenceChange("weekOfMonth")}
+                    error={errors.recurrenceWeekOfMonth}
+                  >
+                    <option value="">Select week</option>
+                    <option value="First">First week</option>
+                    <option value="Second">Second week</option>
+                    <option value="Third">Third week</option>
+                    <option value="Fourth">Fourth week</option>
+                    <option value="Last">Last week</option>
+                  </Select>
+                </FormField>
+
+                <div className="text-sm text-gray-500 text-center">OR</div>
+
+                <FormField>
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      checked={formData.recurrence.endOfMonth}
+                      onChange={handleRecurrenceChange("endOfMonth")}
+                    />
+                    <label className="text-sm text-gray-700">
+                      Last day of month
+                    </label>
+                  </div>
+                </FormField>
+
+                {errors.recurrenceMonthly && (
+                  <p className="text-sm text-error-600 font-medium">{errors.recurrenceMonthly}</p>
+                )}
+              </div>
+            )}
+
+            {/* Date Range */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+              <FormField 
+                label="Start Date" 
+                required
+                error={errors.recurrenceStartDate}
+              >
+                <Input
+                  type="date"
+                  value={formData.recurrence.startDate}
+                  onChange={handleRecurrenceChange("startDate")}
+                  min={minDate}
+                  error={errors.recurrenceStartDate}
+                />
+              </FormField>
+
+              <FormField 
+                label="End Date (Optional)" 
+                error={errors.recurrenceEndDate}
+              >
+                <Input
+                  type="date"
+                  value={formData.recurrence.endDate}
+                  onChange={handleRecurrenceChange("endDate")}
+                  min={formData.recurrence.startDate || minDate}
+                  error={errors.recurrenceEndDate}
+                />
+              </FormField>
+            </div>
+</div>
+        )}
+      </div>
 
       <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
         <Button

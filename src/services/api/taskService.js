@@ -9,7 +9,7 @@ export const taskService = {
         apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
       });
 
-      const params = {
+const params = {
         fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "title_c"}},
@@ -35,7 +35,7 @@ export const taskService = {
       }
 
       // Transform data to match UI expectations
-      const tasks = (response.data || []).map(task => ({
+const tasks = (response.data || []).map(task => ({
         Id: task.Id,
         title: task.title_c || '',
         description: task.description_c || '',
@@ -68,7 +68,7 @@ export const taskService = {
       });
 
       const params = {
-        fields: [
+fields: [
           {"field": {"Name": "Id"}},
           {"field": {"Name": "title_c"}},
           {"field": {"Name": "description_c"}},
@@ -98,7 +98,7 @@ export const taskService = {
       // Transform data to match UI expectations
       const task = response.data;
       return {
-        Id: task.Id,
+Id: task.Id,
         title: task.title_c || '',
         description: task.description_c || '',
         category: task.category_c?.Name || '',
@@ -320,7 +320,7 @@ export const taskService = {
 
       const params = {
         fields: [
-          {"field": {"Name": "Id"}},
+{"field": {"Name": "Id"}},
           {"field": {"Name": "title_c"}},
           {"field": {"Name": "description_c"}},
           {"field": {"Name": "category_c"}, "referenceField": {"field": {"Name": "Name"}}},
@@ -355,7 +355,7 @@ export const taskService = {
       }
 
       // Transform data to match UI expectations
-      const tasks = (response.data || []).map(task => ({
+const tasks = (response.data || []).map(task => ({
         Id: task.Id,
         title: task.title_c || '',
         description: task.description_c || '',
@@ -389,7 +389,7 @@ export const taskService = {
 
       const params = {
         fields: [
-          {"field": {"Name": "Id"}},
+{"field": {"Name": "Id"}},
           {"field": {"Name": "title_c"}},
           {"field": {"Name": "description_c"}},
           {"field": {"Name": "category_c"}, "referenceField": {"field": {"Name": "Name"}}},
@@ -415,7 +415,7 @@ export const taskService = {
 
       // Transform data to match UI expectations
       const tasks = (response.data || []).map(task => ({
-        Id: task.Id,
+Id: task.Id,
         title: task.title_c || '',
         description: task.description_c || '',
         category: task.category_c?.Name || '',
@@ -430,7 +430,6 @@ export const taskService = {
           lastUpdated: task.timer_state_last_updated_c ? new Date(task.timer_state_last_updated_c) : null
         }
       }));
-
       return tasks;
     } catch (error) {
       console.error("Error in taskService.getByStatus:", error);
