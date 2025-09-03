@@ -18,10 +18,11 @@ const TaskForm = ({ onSuccess, onCancel }) => {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
+    subCategory: "",
     priority: "medium",
     dueDate: ""
   });
@@ -185,25 +186,38 @@ const TaskForm = ({ onSuccess, onCancel }) => {
         </div>
       </FormField>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField 
-          label="Category" 
-          required 
+<FormField 
+        label="Category" 
+        required 
+        error={errors.category}
+      >
+        <Select
+          value={formData.category}
+          onChange={handleInputChange("category")}
           error={errors.category}
         >
-          <Select
-            value={formData.category}
-            onChange={handleInputChange("category")}
-            error={errors.category}
-          >
-            {categories.map((category) => (
-              <option key={category.Id} value={category.name}>
-                {category.name}
-              </option>
-            ))}
-          </Select>
-        </FormField>
+          {categories.map((category) => (
+            <option key={category.Id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </Select>
+      </FormField>
 
+      <FormField 
+        label="Subcategory (Optional)"
+        error={errors.subCategory}
+      >
+        <Input
+          type="text"
+          placeholder="Enter subcategory..."
+          value={formData.subCategory}
+          onChange={handleInputChange("subCategory")}
+          error={errors.subCategory}
+        />
+      </FormField>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Priority">
           <Select
             value={formData.priority}
